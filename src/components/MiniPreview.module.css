@@ -27,10 +27,11 @@
   flex-shrink: 0;
 }
 
-.imageWrap svg {
+.imageWrap img {
   display: block;
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 
 .label {

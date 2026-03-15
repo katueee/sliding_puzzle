@@ -42,9 +42,69 @@ export function movePiece(board: Board, index: number, size: GridSize): Board | 
 }
 
 /**
- * 転倒数を用いて解けるかどうかを判定（15パズルの解法条件）
- * - グリッドサイズが奇数: 転倒数が偶数なら解ける
- * - グリッドサイズが偶数: 転倒数 + 空きマスの下からの行番号 が奇数なら解ける
+ * 同じ行/列のピースをまとめてスライド移動。
+ * touchedIndex のピースから空きマスまでの間のピースすべてが1マス空き方向にずれる。
+ */
+export function slidePiecesTo(board: Board, touchedIndex: number, size: GridSize): Board | null {
+  const emptyIndex = getEmptyIndex(board);
+  if (touchedIndex === emptyIndex) return null;
+  const [eRow, eCol] = toRowCol(emptyIndex, size);
+  const [tRow, tCol] = toRowCol(touchedIndex, size);
+
+  if (eRow !== tRow && eCol !== tCol) return null;
+
+  const newBoard = [...board];
+
+  if (eRow === tRow) {
+    // 同じ行 — 横にスライド
+    const dir = tCol > eCol ? 1 : -1;
+    for (let c = eCol; c !== tCol; c += dir) {
+      newBoard[eRow * size + c] = board[eRow * size + c + dir];
+    }
+    newBoard[tRow * size + tCol] = 0;
+  } else {
+    // 同じ列 — 縦にスライド
+    const dir = tRow > eRow ? 1 : -1;
+    for (let r = eRow; r !== tRow; r += dir) {
+      newBoard[r * size + eCol] = board[(r + dir) * size + eCol];
+    }
+    newBoard[tRow * size + tCol] = 0;
+  }
+
+  return newBoard;
+}
+
+/**
+ * スライド時に動くピースのインデックスリストを返す。
+ * touched と empty の間にあるすべてのピース（touched 含む、empty 含まない）。
+ */
+export function getSlidingIndices(board: Board, touchedIndex: number, size: GridSize): number[] {
+  const emptyIndex = getEmptyIndex(board);
+  if (touchedIndex === emptyIndex) return [];
+  const [eRow, eCol] = toRowCol(emptyIndex, size);
+  const [tRow, tCol] = toRowCol(touchedIndex, size);
+
+  if (eRow !== tRow && eCol !== tCol) return [];
+
+  const indices: number[] = [];
+  if (eRow === tRow) {
+    const dir = tCol > eCol ? 1 : -1;
+    for (let c = eCol + dir; ; c += dir) {
+      indices.push(eRow * size + c);
+      if (c === tCol) break;
+    }
+  } else {
+    const dir = tRow > eRow ? 1 : -1;
+    for (let r = eRow + dir; ; r += dir) {
+      indices.push(r * size + eCol);
+      if (r === tRow) break;
+    }
+  }
+  return indices;
+}
+
+/**
+ * 転倒数を用いて解けるかどうかを判定
  */
 export function isSolvable(board: Board, size: GridSize): boolean {
   let inversions = 0;
@@ -69,7 +129,6 @@ export function shuffleBoard(size: GridSize): Board {
   const total = size * size;
   let board: Board;
   do {
-    // Fisher-Yates シャッフル
     board = createSolvedBoard(size);
     for (let i = total - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
