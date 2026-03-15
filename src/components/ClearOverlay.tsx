@@ -37,7 +37,6 @@ function generateBursts() {
       id: i,
       x: 50 + Math.cos(angle) * dist,
       y: 50 + Math.sin(angle) * dist,
-      angle,
       delay: Math.random() * 0.5,
       char: ['✦', '★', '✧', '♦', '●'][i % 5],
       color: [
@@ -71,7 +70,7 @@ const ClearOverlay: React.FC<Props> = ({ moves, elapsed, onRestart, onShuffle })
   const particles = useMemo(generateParticles, []);
   const bursts = useMemo(generateBursts, []);
   const confetti = useMemo(generateConfetti, []);
-  const [phase, setPhase] = useState(0); // 0: flash, 1: show, 2: full
+  const [phase, setPhase] = useState(0); // 0: initial, 1: effects visible, 2: content slides up
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 50);
@@ -84,12 +83,6 @@ const ClearOverlay: React.FC<Props> = ({ moves, elapsed, onRestart, onShuffle })
 
   return (
     <div className={`${styles.overlay} ${phase >= 1 ? styles.visible : ''}`}>
-      {/* フラッシュエフェクト */}
-      <div className={styles.flash} />
-
-      {/* レインボーパルス */}
-      <div className={styles.rainbowPulse} />
-
       {/* 花火バースト */}
       {bursts.map((b) => (
         <span
@@ -142,9 +135,8 @@ const ClearOverlay: React.FC<Props> = ({ moves, elapsed, onRestart, onShuffle })
         </span>
       ))}
 
-      {/* メインコンテンツ */}
+      {/* 下部コンテンツカード */}
       <div className={`${styles.content} ${phase >= 2 ? styles.contentVisible : ''}`}>
-        {/* タイトル — 超デカ＆レインボー */}
         <h2 className={styles.title}>
           <span className={styles.titleLine1}>🎉 できたね！🎉</span>
           <span className={styles.titleLine2}>すっごーい！！</span>
@@ -175,7 +167,7 @@ const ClearOverlay: React.FC<Props> = ({ moves, elapsed, onRestart, onShuffle })
           </p>
         </div>
 
-        {/* ボタン */}
+        {/* ボタン（横並び） */}
         <div className={styles.btnGroup}>
           <button className={styles.btn} onClick={onShuffle}>
             🔄 もういっかい！

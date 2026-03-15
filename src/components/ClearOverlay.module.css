@@ -1,15 +1,8 @@
-/* ===== オーバーレイ全体（パズルが透けて見える） ===== */
+/* ===== オーバーレイ全体（完全に透明、エフェクトだけ） ===== */
 .overlay {
   position: fixed;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 245, 252, 0.15) 0%,
-    rgba(255, 240, 250, 0.25) 35%,
-    rgba(255, 235, 248, 0.65) 55%,
-    rgba(255, 230, 250, 0.88) 75%,
-    rgba(255, 225, 248, 0.95) 100%
-  );
+  background: none;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -17,50 +10,11 @@
   opacity: 0;
   transition: opacity 0.4s ease;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .overlay.visible {
   opacity: 1;
-}
-
-/* ===== 初回フラッシュ ===== */
-.flash {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, white 0%, transparent 70%);
-  animation: flashBang 0.8s ease-out forwards;
-  pointer-events: none;
-  z-index: 1;
-}
-
-@keyframes flashBang {
-  0% { opacity: 1; transform: scale(0.5); }
-  30% { opacity: 0.9; transform: scale(2); }
-  100% { opacity: 0; transform: scale(3); }
-}
-
-/* ===== レインボーパルス ===== */
-.rainbowPulse {
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(
-    from 0deg,
-    rgba(255, 100, 100, 0.15),
-    rgba(255, 200, 100, 0.15),
-    rgba(255, 255, 100, 0.15),
-    rgba(100, 255, 100, 0.15),
-    rgba(100, 200, 255, 0.15),
-    rgba(150, 100, 255, 0.15),
-    rgba(255, 100, 200, 0.15),
-    rgba(255, 100, 100, 0.15)
-  );
-  animation: rainbowSpin 4s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes rainbowSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 /* ===== 花火バースト ===== */
@@ -152,37 +106,45 @@
   }
 }
 
-/* ===== メインコンテンツ（画面下部に配置） ===== */
+/* ===== メインコンテンツ（下部の半透明カード） ===== */
 .content {
-  text-align: center;
-  z-index: 10;
   position: relative;
-  padding: 16px 24px 24px;
-  padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
-  margin-bottom: 0;
+  z-index: 10;
+  text-align: center;
+  pointer-events: auto;
+  background: rgba(255, 250, 255, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px 24px 0 0;
+  padding: 18px 24px 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+  box-shadow:
+    0 -4px 20px rgba(200, 150, 255, 0.2),
+    0 -1px 0 rgba(255, 255, 255, 0.6);
   opacity: 0;
-  transform: scale(0.5) translateY(40px);
-  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translateY(100%);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  width: 100%;
+  max-width: 420px;
 }
 
 .contentVisible {
   opacity: 1;
-  transform: scale(1) translateY(0);
+  transform: translateY(0);
 }
 
 /* ===== タイトル ===== */
 .title {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
 .titleLine1 {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 900;
   display: block;
-  animation: titleBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s both;
   background: linear-gradient(135deg, #ff6699, #ff9933, #ffcc00, #33cc66, #3399ff, #9933ff, #ff6699);
   background-size: 400% 400%;
   -webkit-background-clip: text;
@@ -194,7 +156,7 @@
 }
 
 .titleLine2 {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 900;
   display: block;
   animation: titleBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s both,
@@ -222,12 +184,12 @@
 
 /* ===== 星 ===== */
 .stars {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .starIcon {
-  font-size: 2.4rem;
-  margin: 0 6px;
+  font-size: 2rem;
+  margin: 0 4px;
   display: inline-block;
   animation: starPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
@@ -235,9 +197,8 @@
 .earned {
   color: #ffcc33;
   text-shadow:
-    0 0 20px rgba(255, 200, 50, 0.7),
-    0 0 40px rgba(255, 200, 50, 0.4),
-    0 0 60px rgba(255, 180, 50, 0.2);
+    0 0 16px rgba(255, 200, 50, 0.7),
+    0 0 32px rgba(255, 200, 50, 0.4);
   filter: drop-shadow(0 2px 4px rgba(255, 180, 50, 0.4));
   animation: starPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both,
              starGlow 1.5s ease-in-out infinite;
@@ -246,14 +207,13 @@
 @keyframes starGlow {
   0%, 100% {
     text-shadow:
-      0 0 20px rgba(255, 200, 50, 0.7),
-      0 0 40px rgba(255, 200, 50, 0.4);
+      0 0 16px rgba(255, 200, 50, 0.7),
+      0 0 32px rgba(255, 200, 50, 0.4);
   }
   50% {
     text-shadow:
-      0 0 30px rgba(255, 200, 50, 0.9),
-      0 0 60px rgba(255, 200, 50, 0.6),
-      0 0 80px rgba(255, 180, 50, 0.3);
+      0 0 24px rgba(255, 200, 50, 0.9),
+      0 0 48px rgba(255, 200, 50, 0.6);
   }
 }
 
@@ -278,12 +238,12 @@
 
 /* ===== スコア ===== */
 .stats {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .statLine {
-  margin: 4px 0;
-  font-size: 1.1rem;
+  margin: 2px 0;
+  font-size: 1rem;
   font-weight: 700;
   color: #8060a8;
   display: flex;
@@ -293,15 +253,15 @@
 }
 
 .statEmoji {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 /* ===== ボタン ===== */
 .btnGroup {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 12px;
 }
 
 .btn {
@@ -311,14 +271,14 @@
   animation: btnShine 3s ease infinite;
   color: white;
   font-weight: 800;
-  font-size: 1.25rem;
-  padding: 16px 48px;
+  font-size: 1.1rem;
+  padding: 14px 36px;
   border-radius: 28px;
-  min-height: 52px;
+  min-height: 48px;
   cursor: pointer;
   box-shadow:
-    0 6px 24px rgba(200, 100, 255, 0.4),
-    0 2px 8px rgba(255, 100, 200, 0.3),
+    0 4px 16px rgba(200, 100, 255, 0.35),
+    0 2px 6px rgba(255, 100, 200, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent;
@@ -336,11 +296,11 @@
 }
 
 .btnSub {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.85);
   color: #aa88cc;
-  font-size: 0.95rem;
-  padding: 14px 36px;
-  min-height: 48px;
+  font-size: 0.9rem;
+  padding: 12px 28px;
+  min-height: 44px;
   box-shadow: 0 3px 12px rgba(200, 150, 255, 0.2);
   animation: none;
   text-shadow: none;
