@@ -52,10 +52,11 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
 
-.imageWrap svg {
+.imageWrap img {
   display: block;
   width: 100%;
   height: auto;
+  border-radius: 12px;
 }
 
 .closeBtn {
