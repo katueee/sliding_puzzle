@@ -1,0 +1,131 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 50%, rgba(240, 220, 255, 0.6) 0%, transparent 70%),
+    rgba(180, 150, 220, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  animation: fadeIn 0.4s ease;
+}
+
+.card {
+  background: linear-gradient(155deg, #fff8fc, #f5eaff, #eaf0ff);
+  border-radius: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  padding: 28px 24px 24px;
+  text-align: center;
+  box-shadow:
+    0 10px 40px rgba(180, 130, 220, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  max-width: 310px;
+  width: 88%;
+  animation: cardPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes cardPop {
+  from { transform: scale(0.8) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.icon {
+  font-size: 3.2rem;
+  margin-bottom: 6px;
+  display: inline-block;
+  animation: iconFloat 2.5s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #8868aa;
+  line-height: 1.8;
+  margin: 0 0 16px;
+}
+
+/* タップジェスチャーの図解アニメーション */
+.demo {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 0 auto 20px;
+  width: 100px;
+  height: 48px;
+}
+
+.demoPiece {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ffd0e8, #d0c0ff);
+  box-shadow: 0 2px 6px rgba(200, 150, 255, 0.3);
+  animation: slidePiece 2.5s ease-in-out infinite;
+}
+
+.demoEmpty {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255, 240, 250, 0.3);
+  border: 2px dashed rgba(200, 150, 255, 0.3);
+}
+
+.demoHand {
+  position: absolute;
+  left: 14px;
+  bottom: -8px;
+  font-size: 1.4rem;
+  animation: tapHand 2.5s ease-in-out infinite;
+}
+
+@keyframes slidePiece {
+  0%, 30% { transform: translateX(0); }
+  50%, 80% { transform: translateX(48px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes tapHand {
+  0%, 20% { transform: translateY(0) scale(1); opacity: 1; }
+  30% { transform: translateY(-6px) scale(0.9); opacity: 0.8; }
+  40%, 60% { transform: translateX(48px) translateY(0) scale(1); opacity: 1; }
+  70% { transform: translateX(48px) translateY(-6px) scale(0.9); opacity: 0.8; }
+  80%, 100% { transform: translateX(0) translateY(0) scale(1); opacity: 1; }
+}
+
+.btn {
+  border: none;
+  background: linear-gradient(135deg, #ffaacc, #cc88ee, #88aaff);
+  background-size: 200% 200%;
+  color: white;
+  font-weight: 900;
+  font-size: 1.2rem;
+  padding: 16px 48px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow:
+    0 4px 14px rgba(200, 130, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  -webkit-tap-highlight-color: transparent;
+  text-shadow: 0 1px 3px rgba(100, 50, 150, 0.2);
+  letter-spacing: 0.06em;
+}
+
+.btn:active {
+  transform: scale(0.9);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
