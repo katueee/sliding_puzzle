@@ -31,15 +31,40 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled }
     touchStartRef.current = { x: touch.clientX, y: touch.clientY };
   }, []);
 
+  /** タッチ位置からグリッドのセルインデックスを算出 */
+  const getTouchCellIndex = useCallback((clientX: number, clientY: number): number => {
+    if (!boardRef.current) return -1;
+    const rect = boardRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const col = Math.floor((x / rect.width) * gridSize);
+    const row = Math.floor((y / rect.height) * gridSize);
+    if (col < 0 || col >= gridSize || row < 0 || row >= gridSize) return -1;
+    return row * gridSize + col;
+  }, [gridSize]);
+
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     if (!touchStartRef.current || !boardRef.current) return;
     const touch = e.changedTouches[0];
     const dx = touch.clientX - touchStartRef.current.x;
     const dy = touch.clientY - touchStartRef.current.y;
+    const startX = touchStartRef.current.x;
+    const startY = touchStartRef.current.y;
     touchStartRef.current = null;
 
-    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+    // タップ（スワイプではない）→ タッチしたセルを移動
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+      const cellIndex = getTouchCellIndex(startX, startY);
+      if (cellIndex >= 0 && cellIndex < total && board[cellIndex] !== 0) {
+        if (isAdjacent(cellIndex, emptyIndex, gridSize)) {
+          vibrate();
+          onMovePiece(cellIndex);
+        }
+      }
+      return;
+    }
 
+    // スワイプ → 空きマスに向かう方向のピースを移動
     const [eRow, eCol] = toRowCol(emptyIndex, gridSize);
     let targetIndex = -1;
 
@@ -55,7 +80,7 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled }
       vibrate();
       onMovePiece(targetIndex);
     }
-  }, [emptyIndex, gridSize, total, onMovePiece]);
+  }, [emptyIndex, gridSize, total, onMovePiece, getTouchCellIndex, board]);
 
   const handlePieceClick = useCallback((index: number) => {
     vibrate();
