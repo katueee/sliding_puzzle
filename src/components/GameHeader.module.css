@@ -1,0 +1,95 @@
+.header {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #9966cc;
+  margin: 0 0 6px;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 3px rgba(200, 150, 255, 0.3);
+}
+
+.star {
+  color: #ffcc66;
+  margin: 0 4px;
+  font-size: 1rem;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stat {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #8866aa;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.statIcon {
+  font-size: 0.85rem;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sizeToggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.sizeBtn {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #aa88cc;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sizeBtn.active {
+  background: linear-gradient(135deg, #ffb3d9, #cc99ff);
+  color: white;
+  border-radius: 20px;
+}
+
+.soundBtn {
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s;
+}
+
+.soundBtn:active {
+  transform: scale(0.9);
+}

@@ -1,0 +1,22 @@
+.preview {
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(200, 150, 255, 0.2);
+  transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+}
+
+.preview:active {
+  transform: scale(0.95);
+}
+
+.preview svg {
+  display: block;
+  width: 56px;
+  height: 56px;
+}

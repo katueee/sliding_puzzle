@@ -1,0 +1,112 @@
+/* ===== 全体背景 ===== */
+.app {
+  min-height: 100dvh;
+  min-height: 100vh;
+  background: linear-gradient(145deg, #ffe8f5, #e8d8ff, #d8e8ff, #d8fff0);
+  background-size: 300% 300%;
+  animation: bgShift 12s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes bgShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ===== 背景装飾の星 ===== */
+.bg-decoration {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-star {
+  position: absolute;
+  color: rgba(255, 200, 230, 0.4);
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+/* ===== メインコンテナ ===== */
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  min-height: 100vh;
+}
+
+/* ===== パズルエリア ===== */
+.puzzle-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.puzzle-with-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.puzzle-wrapper {
+  flex: 1;
+  max-width: 360px;
+}
+
+/* パズルピースの背景画像をCSS変数で設定 */
+.puzzle-wrapper button {
+  background-image: var(--puzzle-image);
+}
+
+/* ===== ベストスコア ===== */
+.best-scores {
+  text-align: center;
+  padding: 6px 0 12px;
+  min-height: 28px;
+}
+
+.best-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #aa88cc;
+  margin: 0;
+}
+
+/* ===== フォント ===== */
+* {
+  font-family: 'Rounded Mplus 1c', 'Hiragino Maru Gothic Pro', 'BIZ UDPGothic',
+    -apple-system, BlinkMacSystemFont, sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+/* PWA: iOS SafariでのSafe Area対応 */
+@supports (padding: env(safe-area-inset-top)) {
+  .app-container {
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}

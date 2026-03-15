@@ -1,0 +1,59 @@
+.board {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(200, 150, 255, 0.25);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.piece {
+  position: relative;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-image: var(--puzzle-image);
+  background-repeat: no-repeat;
+  box-shadow: 0 2px 6px rgba(180, 130, 220, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+}
+
+.piece:disabled {
+  cursor: default;
+}
+
+.movable {
+  box-shadow: 0 2px 10px rgba(255, 150, 200, 0.4);
+}
+
+.movable:active {
+  transform: scale(0.95);
+  box-shadow: 0 1px 4px rgba(180, 130, 220, 0.3);
+}
+
+.pieceNumber {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 3px rgba(100, 50, 150, 0.5);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.emptyCell {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+}
