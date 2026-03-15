@@ -16,6 +16,7 @@ function formatTime(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+/** コンパクトなステータスバー。盤面を主役にするため最小限の情報のみ */
 const GameHeader: React.FC<Props> = ({
   moves,
   elapsed,
@@ -25,45 +26,34 @@ const GameHeader: React.FC<Props> = ({
   onSetGridSize,
 }) => (
   <header className={styles.header}>
-    <h1 className={styles.title}>
-      <span className={styles.titleIcon}>🦄</span>
-      {' '}スライドパズル{' '}
-      <span className={styles.titleIconRight}>✨</span>
-    </h1>
+    {/* 左: 手数・タイマー */}
+    <div className={styles.stats}>
+      <span className={styles.stat}>♡ {moves}</span>
+      <span className={styles.statSep}>|</span>
+      <span className={styles.stat}>⏱ {formatTime(elapsed)}</span>
+    </div>
 
-    <div className={styles.controls}>
-      <div className={styles.stats}>
-        <span className={styles.stat}>
-          <span className={styles.statIcon}>♡</span>
-          {moves} て
-        </span>
-        <span className={styles.stat}>
-          <span className={styles.statIcon}>⏱</span>
-          {formatTime(elapsed)}
-        </span>
+    {/* 右: 難易度・音 */}
+    <div className={styles.actions}>
+      <div className={styles.sizeToggle}>
+        {([3, 4] as GridSize[]).map((size) => (
+          <button
+            key={size}
+            className={`${styles.sizeBtn} ${gridSize === size ? styles.sizeActive : ''}`}
+            onClick={() => onSetGridSize(size)}
+            aria-label={`${size}×${size}に変更`}
+          >
+            {size}×{size}
+          </button>
+        ))}
       </div>
-
-      <div className={styles.buttons}>
-        <div className={styles.sizeToggle}>
-          {([3, 4] as GridSize[]).map((size) => (
-            <button
-              key={size}
-              className={`${styles.sizeBtn} ${gridSize === size ? styles.active : ''}`}
-              onClick={() => onSetGridSize(size)}
-            >
-              {size}×{size}
-            </button>
-          ))}
-        </div>
-
-        <button
-          className={styles.soundBtn}
-          onClick={onToggleSound}
-          aria-label={soundEnabled ? '音をオフにする' : '音をオンにする'}
-        >
-          {soundEnabled ? '🔔' : '🔕'}
-        </button>
-      </div>
+      <button
+        className={styles.soundBtn}
+        onClick={onToggleSound}
+        aria-label={soundEnabled ? '音をオフにする' : '音をオンにする'}
+      >
+        {soundEnabled ? '🔔' : '🔕'}
+      </button>
     </div>
   </header>
 );

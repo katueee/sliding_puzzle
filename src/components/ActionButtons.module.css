@@ -1,55 +1,79 @@
-.buttons {
-  display: flex;
-  justify-content: center;
-  gap: 14px;
-  margin-top: 12px;
-  flex-wrap: wrap;
+/* 3列固定レイアウト — 位置が絶対に変わらない */
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 0 2px;
 }
 
 .btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  justify-content: center;
+  gap: 4px;
   border: none;
-  background: linear-gradient(145deg,
-    rgba(255, 255, 255, 0.85),
-    rgba(245, 225, 255, 0.85)
+  background: linear-gradient(150deg,
+    rgba(255, 255, 255, 0.88),
+    rgba(245, 230, 255, 0.88)
   );
   border: 1.5px solid rgba(255, 255, 255, 0.6);
-  border-radius: 22px;
-  padding: 12px 20px;
+  border-radius: 20px;
+  padding: 14px 8px;
+  min-height: 64px;
   cursor: pointer;
   box-shadow:
-    0 4px 14px rgba(200, 150, 255, 0.2),
-    0 2px 4px rgba(255, 180, 220, 0.1),
+    0 4px 14px rgba(200, 150, 255, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
   -webkit-tap-highlight-color: transparent;
-  min-width: 78px;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
 
-.btn:active {
-  transform: scale(0.9) translateY(1px);
+.btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.88);
   box-shadow:
-    0 1px 4px rgba(200, 150, 255, 0.15),
+    0 1px 4px rgba(200, 150, 255, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
+/* メインアクション（まぜる）はカラーで目立たせる */
+.primary {
+  background: linear-gradient(135deg, #ffaacc, #cc88ee, #88bbff);
+  background-size: 200% 200%;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.primary .label {
+  color: white;
+  -webkit-text-fill-color: white;
+  text-shadow: 0 1px 3px rgba(100, 50, 150, 0.25);
+}
+
+.primary .icon {
+  filter: drop-shadow(0 1px 3px rgba(255, 255, 255, 0.5));
+}
+
 .icon {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   line-height: 1;
-  filter: drop-shadow(0 1px 2px rgba(200, 150, 255, 0.2));
+  filter: drop-shadow(0 1px 2px rgba(200, 150, 255, 0.15));
 }
 
 .label {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #bb77cc, #8899dd);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #9878b8;
   letter-spacing: 0.04em;
 }

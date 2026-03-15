@@ -425,41 +425,41 @@ function App() {
           onSetGridSize={handleSetGridSize}
         />
 
+        {/* 盤面エリア — 画面の主役 */}
         <div className="puzzle-area">
-          <div className="puzzle-with-preview">
-            <div
-              className="puzzle-wrapper"
-              style={{ '--puzzle-image': `url("${bgImageUrl}")` } as React.CSSProperties}
-            >
-              <PuzzleBoard
-                board={state.board}
-                gridSize={state.gridSize}
-                onMovePiece={handleMovePiece}
-                disabled={state.status === 'cleared'}
-              />
-            </div>
-            <MiniPreview onClick={() => setShowPreview(true)} />
+          <div
+            className="puzzle-wrapper"
+            style={{ '--puzzle-image': `url("${bgImageUrl}")` } as React.CSSProperties}
+          >
+            <PuzzleBoard
+              board={state.board}
+              gridSize={state.gridSize}
+              onMovePiece={handleMovePiece}
+              disabled={state.status === 'cleared'}
+            />
           </div>
         </div>
 
+        {/* 盤面下: 見本サムネイル＋ベストスコア */}
+        <div className="sub-info">
+          <MiniPreview onClick={() => setShowPreview(true)} />
+          {(bestScores.moves !== null || bestScores.time !== null) && (
+            <span className="best-text">
+              🏆 {bestScores.moves ?? '-'}て /{' '}
+              {bestScores.time != null
+                ? `${Math.floor(bestScores.time / 60)}:${(bestScores.time % 60).toString().padStart(2, '0')}`
+                : '-'}
+            </span>
+          )}
+        </div>
+
+        {/* 操作ボタン */}
         <ActionButtons
           status={state.status}
           onShuffle={handleShuffle}
           onRestart={handleRestart}
           onShowPreview={() => setShowPreview(true)}
         />
-
-        {/* ベストスコア表示 */}
-        <div className="best-scores">
-          {(bestScores.moves !== null || bestScores.time !== null) && (
-            <p className="best-text">
-              🏆 ベスト: {bestScores.moves ?? '-'} て /{' '}
-              {bestScores.time != null
-                ? `${Math.floor(bestScores.time / 60)}:${(bestScores.time % 60).toString().padStart(2, '0')}`
-                : '-'}
-            </p>
-          )}
-        </div>
       </div>
 
       {/* モーダル・オーバーレイ */}

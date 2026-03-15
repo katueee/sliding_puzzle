@@ -1,120 +1,75 @@
 .header {
-  text-align: center;
-  padding: 8px 0 4px;
-}
-
-.title {
-  font-size: 1.35rem;
-  font-weight: 900;
-  margin: 0 0 6px;
-  letter-spacing: 0.05em;
-  background: linear-gradient(135deg, #dd77bb, #aa77dd, #7799ee, #77bbaa);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: titleShimmer 4s ease infinite;
-  text-shadow: none;
-}
-
-@keyframes titleShimmer {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-.titleIcon {
-  display: inline-block;
-  font-size: 1.1rem;
-  -webkit-text-fill-color: initial;
-  animation: iconBounce 2s ease-in-out infinite;
-  vertical-align: middle;
-}
-
-.titleIconRight {
-  composes: titleIcon;
-  animation-delay: 0.3s;
-}
-
-@keyframes iconBounce {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-3px) rotate(-5deg); }
-  75% { transform: translateY(1px) rotate(3deg); }
-}
-
-.controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  padding: 4px 0;
+  min-height: 36px;
 }
 
+/* 手数・タイマー — 小さめでさりげなく */
 .stats {
   display: flex;
-  gap: 14px;
+  align-items: center;
+  gap: 6px;
 }
 
 .stat {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #9070b8;
-  display: flex;
-  align-items: center;
-  gap: 3px;
+  color: #9878b8;
 }
 
-.statIcon {
-  font-size: 0.85rem;
-  display: inline-block;
+.statSep {
+  font-size: 0.65rem;
+  color: #c0a8d8;
 }
 
-.buttons {
+/* 難易度・音 — 右端にまとめる */
+.actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .sizeToggle {
   display: flex;
-  background: rgba(255, 255, 255, 0.55);
-  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 18px;
+  border: 1.5px solid rgba(220, 200, 240, 0.35);
   overflow: hidden;
-  border: 1.5px solid rgba(220, 200, 240, 0.4);
 }
 
 .sizeBtn {
   border: none;
   background: transparent;
-  padding: 5px 12px;
-  font-size: 0.75rem;
+  padding: 4px 10px;
+  font-size: 0.7rem;
   font-weight: 800;
-  color: #b090cc;
+  color: #b898cc;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent;
 }
 
-.sizeBtn.active {
-  background: linear-gradient(135deg, #ffaacc, #bb88ee, #88bbff);
+.sizeActive {
+  background: linear-gradient(135deg, #ffaacc, #bb88ee);
   color: white;
-  border-radius: 22px;
-  text-shadow: 0 1px 3px rgba(100, 50, 150, 0.3);
-  box-shadow: 0 2px 8px rgba(200, 130, 255, 0.3);
-  transform: scale(1.05);
+  border-radius: 18px;
+  box-shadow: 0 2px 6px rgba(200, 130, 255, 0.25);
 }
 
 .sizeBtn:active {
-  transform: scale(0.92);
+  transform: scale(0.9);
 }
 
 .soundBtn {
   border: none;
-  background: rgba(255, 255, 255, 0.55);
-  border: 1.5px solid rgba(220, 200, 240, 0.4);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1.5px solid rgba(220, 200, 240, 0.35);
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -124,5 +79,5 @@
 }
 
 .soundBtn:active {
-  transform: scale(0.85);
+  transform: scale(0.82);
 }
