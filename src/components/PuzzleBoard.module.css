@@ -5,24 +5,36 @@
   max-width: 360px;
   aspect-ratio: 1;
   margin: 0 auto;
-  padding: 6px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(200, 150, 255, 0.25);
+  padding: 8px;
+  background: linear-gradient(135deg,
+    rgba(255, 220, 240, 0.5),
+    rgba(220, 210, 255, 0.5),
+    rgba(210, 230, 255, 0.5)
+  );
+  border-radius: 22px;
+  border: 2.5px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 6px 24px rgba(200, 150, 255, 0.25),
+    0 2px 8px rgba(255, 180, 220, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .piece {
   position: relative;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   background-image: var(--puzzle-image);
   background-repeat: no-repeat;
-  box-shadow: 0 2px 6px rgba(180, 130, 220, 0.2);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow:
+    0 2px 6px rgba(180, 130, 220, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   padding: 0;
@@ -33,27 +45,34 @@
 }
 
 .movable {
-  box-shadow: 0 2px 10px rgba(255, 150, 200, 0.4);
+  box-shadow:
+    0 3px 12px rgba(255, 150, 200, 0.35),
+    0 0 0 1.5px rgba(255, 200, 230, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .movable:active {
-  transform: scale(0.95);
-  box-shadow: 0 1px 4px rgba(180, 130, 220, 0.3);
+  transform: scale(0.93);
+  box-shadow:
+    0 1px 4px rgba(180, 130, 220, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .pieceNumber {
   position: absolute;
-  top: 3px;
-  left: 4px;
-  font-size: 10px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 1px 3px rgba(100, 50, 150, 0.5);
+  top: 2px;
+  left: 3px;
+  font-size: 9px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow:
+    0 1px 3px rgba(100, 50, 150, 0.6),
+    0 0 6px rgba(200, 100, 200, 0.3);
   line-height: 1;
   pointer-events: none;
 }
 
 .emptyCell {
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  background: radial-gradient(ellipse, rgba(255, 240, 250, 0.2) 0%, rgba(255, 255, 255, 0.08) 100%);
 }

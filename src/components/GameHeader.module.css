@@ -4,18 +4,41 @@
 }
 
 .title {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #9966cc;
+  font-size: 1.35rem;
+  font-weight: 900;
   margin: 0 0 6px;
-  letter-spacing: 0.04em;
-  text-shadow: 0 1px 3px rgba(200, 150, 255, 0.3);
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #dd77bb, #aa77dd, #7799ee, #77bbaa);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: titleShimmer 4s ease infinite;
+  text-shadow: none;
 }
 
-.star {
-  color: #ffcc66;
-  margin: 0 4px;
-  font-size: 1rem;
+@keyframes titleShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.titleIcon {
+  display: inline-block;
+  font-size: 1.1rem;
+  -webkit-text-fill-color: initial;
+  animation: iconBounce 2s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+.titleIconRight {
+  composes: titleIcon;
+  animation-delay: 0.3s;
+}
+
+@keyframes iconBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-5deg); }
+  75% { transform: translateY(1px) rotate(3deg); }
 }
 
 .controls {
@@ -28,13 +51,13 @@
 
 .stats {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
 .stat {
   font-size: 0.9rem;
-  font-weight: 600;
-  color: #8866aa;
+  font-weight: 700;
+  color: #9070b8;
   display: flex;
   align-items: center;
   gap: 3px;
@@ -42,6 +65,7 @@
 
 .statIcon {
   font-size: 0.85rem;
+  display: inline-block;
 }
 
 .buttons {
@@ -52,44 +76,53 @@
 
 .sizeToggle {
   display: flex;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 22px;
   overflow: hidden;
+  border: 1.5px solid rgba(220, 200, 240, 0.4);
 }
 
 .sizeBtn {
   border: none;
   background: transparent;
-  padding: 4px 10px;
+  padding: 5px 12px;
   font-size: 0.75rem;
-  font-weight: 700;
-  color: #aa88cc;
+  font-weight: 800;
+  color: #b090cc;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   -webkit-tap-highlight-color: transparent;
 }
 
 .sizeBtn.active {
-  background: linear-gradient(135deg, #ffb3d9, #cc99ff);
+  background: linear-gradient(135deg, #ffaacc, #bb88ee, #88bbff);
   color: white;
-  border-radius: 20px;
+  border-radius: 22px;
+  text-shadow: 0 1px 3px rgba(100, 50, 150, 0.3);
+  box-shadow: 0 2px 8px rgba(200, 130, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.sizeBtn:active {
+  transform: scale(0.92);
 }
 
 .soundBtn {
   border: none;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1.5px solid rgba(220, 200, 240, 0.4);
   border-radius: 50%;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   font-size: 1.1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.15s;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .soundBtn:active {
-  transform: scale(0.9);
+  transform: scale(0.85);
 }

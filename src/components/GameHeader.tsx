@@ -26,9 +26,9 @@ const GameHeader: React.FC<Props> = ({
 }) => (
   <header className={styles.header}>
     <h1 className={styles.title}>
-      <span className={styles.star}>★</span>
-      スライドパズル
-      <span className={styles.star}>★</span>
+      <span className={styles.titleIcon}>🦄</span>
+      {' '}スライドパズル{' '}
+      <span className={styles.titleIconRight}>✨</span>
     </h1>
 
     <div className={styles.controls}>

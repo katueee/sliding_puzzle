@@ -24,14 +24,14 @@ function formatTime(seconds: number): string {
 }
 
 function generateParticles(): Particle[] {
-  const chars = ['⭐', '✨', '💖', '🌟', '🎀', '♡', '☆'];
-  return Array.from({ length: 20 }, (_, i) => ({
+  const chars = ['⭐', '✨', '💖', '🌟', '🎀', '♡', '☆', '🦄', '🌈', '💫', '🐰'];
+  return Array.from({ length: 30 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
     char: chars[Math.floor(Math.random() * chars.length)],
-    delay: Math.random() * 0.8,
-    size: 0.7 + Math.random() * 0.8,
+    delay: Math.random() * 1.2,
+    size: 0.6 + Math.random() * 1.0,
   }));
 }
 
