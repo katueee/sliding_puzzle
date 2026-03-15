@@ -196,8 +196,6 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
         // 元画像でのこのピースの位置（正のパーセント）
         const origRow = Math.floor((value - 1) / gridSize);
         const origCol = (value - 1) % gridSize;
-        const bgPosX = origCol * (100 / (gridSize - 1));
-        const bgPosY = origRow * (100 / (gridSize - 1));
 
         const [eRow, eCol] = toRowCol(emptyIndex, gridSize);
         const [pRow, pCol] = toRowCol(index, gridSize);
@@ -211,12 +209,19 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
             onTouchStart={(e) => handleTouchStart(e, index)}
             onClick={() => handleClick(index)}
             aria-label={`ピース ${value}`}
-            style={{
-              backgroundImage: `url("${imageUrl}")`,
-              backgroundPosition: `${bgPosX}% ${bgPosY}%`,
-              backgroundSize: `${gridSize * 100}% ${gridSize * 100}%`,
-            }}
           >
+            <img
+              src={imageUrl}
+              alt=""
+              draggable={false}
+              className={styles.pieceImg}
+              style={{
+                width: `${gridSize * 100}%`,
+                height: `${gridSize * 100}%`,
+                left: `${-origCol * 100}%`,
+                top: `${-origRow * 100}%`,
+              }}
+            />
             <span className={styles.pieceNumber}>{value}</span>
           </button>
         );

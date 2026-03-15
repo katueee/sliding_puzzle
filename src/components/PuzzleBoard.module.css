@@ -30,7 +30,7 @@
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  background-repeat: no-repeat;
+  background: none;
   box-shadow:
     0 2px 6px rgba(180, 130, 220, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
@@ -74,6 +74,17 @@
 /* --- 動かせないピース --- */
 .locked {
   cursor: default;
+}
+
+/* --- ピース画像 --- */
+.pieceImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* --- ピース番号 --- */
