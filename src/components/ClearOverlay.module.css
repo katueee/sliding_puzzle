@@ -1,14 +1,17 @@
-/* ===== オーバーレイ全体 ===== */
+/* ===== オーバーレイ全体（パズルが透けて見える） ===== */
 .overlay {
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(ellipse 100% 80% at 50% 40%, rgba(255, 240, 250, 0.92) 0%, transparent 70%),
-    rgba(255, 230, 250, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 245, 252, 0.15) 0%,
+    rgba(255, 240, 250, 0.25) 35%,
+    rgba(255, 235, 248, 0.65) 55%,
+    rgba(255, 230, 250, 0.88) 75%,
+    rgba(255, 225, 248, 0.95) 100%
+  );
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   z-index: 200;
   opacity: 0;
@@ -149,11 +152,14 @@
   }
 }
 
-/* ===== メインコンテンツ ===== */
+/* ===== メインコンテンツ（画面下部に配置） ===== */
 .content {
   text-align: center;
   z-index: 10;
   position: relative;
+  padding: 16px 24px 24px;
+  padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+  margin-bottom: 0;
   opacity: 0;
   transform: scale(0.5) translateY(40px);
   transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -166,10 +172,10 @@
 
 /* ===== タイトル ===== */
 .title {
-  margin: 0 0 10px;
+  margin: 0 0 6px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
 }
 
 .titleLine1 {
@@ -216,11 +222,11 @@
 
 /* ===== 星 ===== */
 .stars {
-  margin-bottom: 12px;
+  margin-bottom: 6px;
 }
 
 .starIcon {
-  font-size: 3rem;
+  font-size: 2.4rem;
   margin: 0 6px;
   display: inline-block;
   animation: starPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
@@ -272,7 +278,7 @@
 
 /* ===== スコア ===== */
 .stats {
-  margin-bottom: 22px;
+  margin-bottom: 10px;
 }
 
 .statLine {
@@ -295,7 +301,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .btn {
@@ -306,9 +312,9 @@
   color: white;
   font-weight: 800;
   font-size: 1.25rem;
-  padding: 20px 56px;
-  border-radius: 30px;
-  min-height: 60px;
+  padding: 16px 48px;
+  border-radius: 28px;
+  min-height: 52px;
   cursor: pointer;
   box-shadow:
     0 6px 24px rgba(200, 100, 255, 0.4),

@@ -138,7 +138,7 @@ function App() {
 
         {/* 盤面エリア */}
         <div className="puzzle-area">
-          <div className="puzzle-wrapper">
+          <div className={`puzzle-wrapper ${state.status === 'cleared' ? 'puzzle-cleared' : ''}`}>
             <PuzzleBoard
               board={state.board}
               gridSize={state.gridSize}
