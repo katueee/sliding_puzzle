@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  base: '/sliding_puzzle/',
   plugins: [
     react(),
     VitePWA({
@@ -16,7 +17,7 @@ export default defineConfig({
         background_color: '#ffe8f5',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/',
+        start_url: '/sliding_puzzle/',
         icons: [
           {
             src: 'pwa-192x192.png',
