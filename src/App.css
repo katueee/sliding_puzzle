@@ -95,10 +95,6 @@
   max-width: 360px;
 }
 
-.puzzle-wrapper button {
-  background-image: var(--puzzle-image);
-}
-
 /* ===== 盤面下: 見本 + ベストスコア — 横並びでコンパクト ===== */
 .sub-info {
   display: flex;
