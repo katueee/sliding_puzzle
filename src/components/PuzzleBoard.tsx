@@ -12,22 +12,15 @@ interface Props {
 }
 
 interface DragState {
-  /** ユーザーがタッチしたピースのboardインデックス */
   touchedIndex: number;
-  /** ドラッグで動くピース群のboardインデックス */
   slidingIndices: number[];
-  /** ドラッグで動くピース群のDOM要素 */
   slidingEls: HTMLElement[];
-  /** ドラッグ方向 */
   axis: 'x' | 'y';
-  /** 最大移動量px（正=右/下, 負=左/上） */
+  /** 最大移動量px。正=右/下、負=左/上 */
   maxDelta: number;
-  /** タッチ開始座標 */
   startX: number;
   startY: number;
-  /** 1セルのサイズpx */
   cellSize: number;
-  /** 現在のクランプ済みdelta */
   currentDelta: number;
 }
 
@@ -38,13 +31,14 @@ function vibrate() {
 const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, imageUrl }) => {
   const boardRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<DragState | null>(null);
+  /** アニメーション中のフラグ（二重操作防止） */
+  const animatingRef = useRef(false);
   const emptyIndex = getEmptyIndex(board);
 
-  // --- ピース上でタッチ開始 ---
+  // --- タッチ開始 ---
   const handleTouchStart = useCallback((e: React.TouchEvent<HTMLButtonElement>, index: number) => {
-    if (disabled || !boardRef.current) return;
+    if (disabled || animatingRef.current || !boardRef.current) return;
 
-    // 同じ行 or 列にいるか確認し、動くピース群を取得
     const sliding = getSlidingIndices(board, index, gridSize);
     if (sliding.length === 0) return;
 
@@ -56,21 +50,19 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
     const [tRow, tCol] = toRowCol(index, gridSize);
 
     const axis: 'x' | 'y' = eRow === tRow ? 'x' : 'y';
-    // 空きマス方向へ1セル分が最大移動量
     const maxDelta = axis === 'x'
-      ? (eCol < tCol ? -1 : 1) * cellSize   // 空きが左なら左へ、右なら右へ
+      ? (eCol < tCol ? -1 : 1) * cellSize
       : (eRow < tRow ? -1 : 1) * cellSize;
 
-    // 動くピースのDOM要素を全取得
     const slidingEls = sliding.map(idx =>
       boardRef.current!.querySelector<HTMLElement>(`[data-cell-index="${idx}"]`)
     ).filter((el): el is HTMLElement => el !== null);
 
-    // ドラッグ中はtransitionを切ってz-indexを上げる
-    slidingEls.forEach(el => {
+    // ドラッグ中はtransition無効、前面に
+    for (const el of slidingEls) {
       el.style.transition = 'none';
       el.style.zIndex = '10';
-    });
+    }
 
     dragRef.current = {
       touchedIndex: index,
@@ -87,7 +79,7 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
     vibrate();
   }, [board, disabled, emptyIndex, gridSize]);
 
-  // --- タッチ移動 & 終了（native listener: passive=false でスクロール防止）---
+  // --- タッチ移動 & 終了 ---
   useEffect(() => {
     const boardEl = boardRef.current;
     if (!boardEl) return;
@@ -109,10 +101,8 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
       } else {
         clamped = Math.min(0, Math.max(raw, state.maxDelta));
       }
-
       state.currentDelta = clamped;
 
-      // 全ピースを同時に移動
       const tx = state.axis === 'x' ? clamped : 0;
       const ty = state.axis === 'y' ? clamped : 0;
       for (const el of state.slidingEls) {
@@ -125,17 +115,48 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
       if (!state) return;
       dragRef.current = null;
 
-      const movedEnough = Math.abs(state.currentDelta) > state.cellSize * 0.25;
-
-      // スナップバックアニメーション
-      for (const el of state.slidingEls) {
-        el.style.transition = 'transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1)';
-        el.style.transform = '';
-        el.style.zIndex = '';
-      }
+      const movedEnough = Math.abs(state.currentDelta) > 5; // 5px以上で確定
 
       if (movedEnough) {
-        requestAnimationFrame(() => onMovePiece(state.touchedIndex));
+        // ===== 残りを滑り切るアニメーション =====
+        animatingRef.current = true;
+        const remaining = state.maxDelta - state.currentDelta;
+        // 残り距離に比例した時間（最小80ms, 最大180ms）
+        const duration = Math.max(80, Math.min(180,
+          Math.abs(remaining) / state.cellSize * 180
+        ));
+
+        const targetTx = state.axis === 'x' ? state.maxDelta : 0;
+        const targetTy = state.axis === 'y' ? state.maxDelta : 0;
+
+        for (const el of state.slidingEls) {
+          el.style.transition = `transform ${duration}ms ease-out`;
+          el.style.transform = `translate(${targetTx}px, ${targetTy}px)`;
+        }
+
+        // アニメーション完了後にstate更新
+        const firstEl = state.slidingEls[0];
+        const cleanup = () => {
+          firstEl.removeEventListener('transitionend', cleanup);
+          for (const el of state.slidingEls) {
+            el.style.transition = '';
+            el.style.transform = '';
+            el.style.zIndex = '';
+          }
+          animatingRef.current = false;
+          onMovePiece(state.touchedIndex);
+        };
+        firstEl.addEventListener('transitionend', cleanup);
+
+        // フォールバック（transitionendが発火しない場合）
+        setTimeout(cleanup, duration + 50);
+      } else {
+        // スナップバック
+        for (const el of state.slidingEls) {
+          el.style.transition = 'transform 0.12s ease-out';
+          el.style.transform = '';
+          el.style.zIndex = '';
+        }
       }
     };
 
@@ -149,9 +170,9 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
     };
   }, [onMovePiece]);
 
-  // --- クリック（デスクトップ / タップのフォールバック） ---
+  // --- クリック（デスクトップ / タップフォールバック） ---
   const handleClick = useCallback((index: number) => {
-    if (dragRef.current || disabled) return;
+    if (dragRef.current || animatingRef.current || disabled) return;
     const sliding = getSlidingIndices(board, index, gridSize);
     if (sliding.length === 0) return;
     vibrate();
@@ -172,12 +193,12 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
           return <div key="empty" className={styles.emptyCell} />;
         }
 
+        // 元画像でのこのピースの位置（正のパーセント）
         const origRow = Math.floor((value - 1) / gridSize);
         const origCol = (value - 1) % gridSize;
-        const bgPosX = -(origCol * (100 / (gridSize - 1)));
-        const bgPosY = -(origRow * (100 / (gridSize - 1)));
+        const bgPosX = origCol * (100 / (gridSize - 1));
+        const bgPosY = origRow * (100 / (gridSize - 1));
 
-        // 同じ行/列にいるピースはスライド可能
         const [eRow, eCol] = toRowCol(emptyIndex, gridSize);
         const [pRow, pCol] = toRowCol(index, gridSize);
         const canSlide = !disabled && (eRow === pRow || eCol === pCol);
@@ -193,7 +214,7 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
             style={{
               backgroundImage: `url("${imageUrl}")`,
               backgroundPosition: `${bgPosX}% ${bgPosY}%`,
-              backgroundSize: `${gridSize * 100}%`,
+              backgroundSize: `${gridSize * 100}% ${gridSize * 100}%`,
             }}
           >
             <span className={styles.pieceNumber}>{value}</span>
