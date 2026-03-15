@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react';
 import type { Board, GridSize } from '../types/game';
-import { getEmptyIndex, isAdjacent, toRowCol } from '../utils/puzzle';
+import { getEmptyIndex, toRowCol, getSlidingIndices } from '../utils/puzzle';
 import styles from './PuzzleBoard.module.css';
 
 interface Props {
@@ -12,18 +12,25 @@ interface Props {
 }
 
 interface DragState {
-  pieceIndex: number;
-  pieceEl: HTMLButtonElement;
+  /** ユーザーがタッチしたピースのboardインデックス */
+  touchedIndex: number;
+  /** ドラッグで動くピース群のboardインデックス */
+  slidingIndices: number[];
+  /** ドラッグで動くピース群のDOM要素 */
+  slidingEls: HTMLElement[];
+  /** ドラッグ方向 */
+  axis: 'x' | 'y';
+  /** 最大移動量px（正=右/下, 負=左/上） */
+  maxDelta: number;
+  /** タッチ開始座標 */
   startX: number;
   startY: number;
-  direction: 'x' | 'y';
-  maxDelta: number; // positive = right/down, negative = left/up
+  /** 1セルのサイズpx */
   cellSize: number;
+  /** 現在のクランプ済みdelta */
   currentDelta: number;
-  moved: boolean;
 }
 
-/** 軽い振動フィードバック */
 function vibrate() {
   try { navigator?.vibrate?.(12); } catch { /* ignore */ }
 }
@@ -33,45 +40,57 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
   const dragRef = useRef<DragState | null>(null);
   const emptyIndex = getEmptyIndex(board);
 
-  // --- タッチ開始: ピース上でドラッグ開始 ---
-  const handlePieceTouchStart = useCallback((e: React.TouchEvent<HTMLButtonElement>, index: number) => {
+  // --- ピース上でタッチ開始 ---
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLButtonElement>, index: number) => {
     if (disabled || !boardRef.current) return;
-    if (!isAdjacent(index, emptyIndex, gridSize)) return;
+
+    // 同じ行 or 列にいるか確認し、動くピース群を取得
+    const sliding = getSlidingIndices(board, index, gridSize);
+    if (sliding.length === 0) return;
 
     const touch = e.touches[0];
     const rect = boardRef.current.getBoundingClientRect();
     const cellSize = rect.width / gridSize;
-    const [pRow, pCol] = toRowCol(index, gridSize);
+
     const [eRow, eCol] = toRowCol(emptyIndex, gridSize);
+    const [tRow, tCol] = toRowCol(index, gridSize);
 
-    const direction: 'x' | 'y' = pRow === eRow ? 'x' : 'y';
-    const maxDelta = direction === 'x'
-      ? (eCol - pCol) * cellSize
-      : (eRow - pRow) * cellSize;
+    const axis: 'x' | 'y' = eRow === tRow ? 'x' : 'y';
+    // 空きマス方向へ1セル分が最大移動量
+    const maxDelta = axis === 'x'
+      ? (eCol < tCol ? -1 : 1) * cellSize   // 空きが左なら左へ、右なら右へ
+      : (eRow < tRow ? -1 : 1) * cellSize;
 
-    const pieceEl = e.currentTarget;
-    pieceEl.style.transition = 'none';
-    pieceEl.style.zIndex = '10';
+    // 動くピースのDOM要素を全取得
+    const slidingEls = sliding.map(idx =>
+      boardRef.current!.querySelector<HTMLElement>(`[data-cell-index="${idx}"]`)
+    ).filter((el): el is HTMLElement => el !== null);
+
+    // ドラッグ中はtransitionを切ってz-indexを上げる
+    slidingEls.forEach(el => {
+      el.style.transition = 'none';
+      el.style.zIndex = '10';
+    });
 
     dragRef.current = {
-      pieceIndex: index,
-      pieceEl,
+      touchedIndex: index,
+      slidingIndices: sliding,
+      slidingEls,
+      axis,
+      maxDelta,
       startX: touch.clientX,
       startY: touch.clientY,
-      direction,
-      maxDelta,
       cellSize,
       currentDelta: 0,
-      moved: false,
     };
 
     vibrate();
-  }, [disabled, emptyIndex, gridSize]);
+  }, [board, disabled, emptyIndex, gridSize]);
 
-  // --- タッチ中: 指に追従 (native listener for passive:false) ---
+  // --- タッチ移動 & 終了（native listener: passive=false でスクロール防止）---
   useEffect(() => {
-    const board = boardRef.current;
-    if (!board) return;
+    const boardEl = boardRef.current;
+    if (!boardEl) return;
 
     const onTouchMove = (e: TouchEvent) => {
       const state = dragRef.current;
@@ -79,7 +98,7 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
       e.preventDefault();
 
       const touch = e.touches[0];
-      const raw = state.direction === 'x'
+      const raw = state.axis === 'x'
         ? touch.clientX - state.startX
         : touch.clientY - state.startY;
 
@@ -92,11 +111,13 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
       }
 
       state.currentDelta = clamped;
-      if (Math.abs(clamped) > 2) state.moved = true;
 
-      const tx = state.direction === 'x' ? clamped : 0;
-      const ty = state.direction === 'y' ? clamped : 0;
-      state.pieceEl.style.transform = `translate(${tx}px, ${ty}px)`;
+      // 全ピースを同時に移動
+      const tx = state.axis === 'x' ? clamped : 0;
+      const ty = state.axis === 'y' ? clamped : 0;
+      for (const el of state.slidingEls) {
+        el.style.transform = `translate(${tx}px, ${ty}px)`;
+      }
     };
 
     const onTouchEnd = () => {
@@ -104,39 +125,38 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
       if (!state) return;
       dragRef.current = null;
 
-      const moved = Math.abs(state.currentDelta) > state.cellSize * 0.3;
+      const movedEnough = Math.abs(state.currentDelta) > state.cellSize * 0.25;
 
       // スナップバックアニメーション
-      state.pieceEl.style.transition = 'transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1)';
-      state.pieceEl.style.transform = '';
-      state.pieceEl.style.zIndex = '';
+      for (const el of state.slidingEls) {
+        el.style.transition = 'transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        el.style.transform = '';
+        el.style.zIndex = '';
+      }
 
-      if (moved) {
-        // わずかな遅延でstate更新（アニメーション前にDOMをリセット）
-        requestAnimationFrame(() => onMovePiece(state.pieceIndex));
+      if (movedEnough) {
+        requestAnimationFrame(() => onMovePiece(state.touchedIndex));
       }
     };
 
-    board.addEventListener('touchmove', onTouchMove, { passive: false });
-    board.addEventListener('touchend', onTouchEnd);
-    board.addEventListener('touchcancel', onTouchEnd);
-
+    boardEl.addEventListener('touchmove', onTouchMove, { passive: false });
+    boardEl.addEventListener('touchend', onTouchEnd);
+    boardEl.addEventListener('touchcancel', onTouchEnd);
     return () => {
-      board.removeEventListener('touchmove', onTouchMove);
-      board.removeEventListener('touchend', onTouchEnd);
-      board.removeEventListener('touchcancel', onTouchEnd);
+      boardEl.removeEventListener('touchmove', onTouchMove);
+      boardEl.removeEventListener('touchend', onTouchEnd);
+      boardEl.removeEventListener('touchcancel', onTouchEnd);
     };
   }, [onMovePiece]);
 
-  // --- クリック（デスクトップ or タップフォールバック） ---
-  const handlePieceClick = useCallback((index: number) => {
-    // ドラッグ後のクリックは無視
-    if (dragRef.current) return;
-    if (disabled) return;
-    if (!isAdjacent(index, emptyIndex, gridSize)) return;
+  // --- クリック（デスクトップ / タップのフォールバック） ---
+  const handleClick = useCallback((index: number) => {
+    if (dragRef.current || disabled) return;
+    const sliding = getSlidingIndices(board, index, gridSize);
+    if (sliding.length === 0) return;
     vibrate();
     onMovePiece(index);
-  }, [disabled, emptyIndex, gridSize, onMovePiece]);
+  }, [board, disabled, gridSize, onMovePiece]);
 
   return (
     <div
@@ -156,14 +176,19 @@ const PuzzleBoard: React.FC<Props> = ({ board, gridSize, onMovePiece, disabled, 
         const origCol = (value - 1) % gridSize;
         const bgPosX = -(origCol * (100 / (gridSize - 1)));
         const bgPosY = -(origRow * (100 / (gridSize - 1)));
-        const canMove = !disabled && isAdjacent(index, emptyIndex, gridSize);
+
+        // 同じ行/列にいるピースはスライド可能
+        const [eRow, eCol] = toRowCol(emptyIndex, gridSize);
+        const [pRow, pCol] = toRowCol(index, gridSize);
+        const canSlide = !disabled && (eRow === pRow || eCol === pCol);
 
         return (
           <button
             key={value}
-            className={`${styles.piece} ${canMove ? styles.movable : styles.locked}`}
-            onTouchStart={(e) => handlePieceTouchStart(e, index)}
-            onClick={() => handlePieceClick(index)}
+            data-cell-index={index}
+            className={`${styles.piece} ${canSlide ? styles.movable : styles.locked}`}
+            onTouchStart={(e) => handleTouchStart(e, index)}
+            onClick={() => handleClick(index)}
             aria-label={`ピース ${value}`}
             style={{
               backgroundImage: `url("${imageUrl}")`,

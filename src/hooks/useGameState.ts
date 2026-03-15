@@ -1,6 +1,6 @@
 import { useReducer, useEffect, useCallback, useRef } from 'react';
 import type { GameState, GameAction, GridSize } from '../types/game';
-import { shuffleBoard, movePiece, isSolved, createSolvedBoard } from '../utils/puzzle';
+import { shuffleBoard, slidePiecesTo, isSolved, createSolvedBoard } from '../utils/puzzle';
 import { loadSettings, saveSettings, updateBestScore } from '../utils/storage';
 import { playMoveSound, playClearSound, playTapSound } from '../utils/sound';
 
@@ -22,7 +22,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'MOVE_PIECE': {
       if (state.status === 'cleared') return state;
-      const newBoard = movePiece(state.board, action.index, state.gridSize);
+      // slidePiecesTo は隣接1マスでも複数マスでも対応
+      const newBoard = slidePiecesTo(state.board, action.index, state.gridSize);
       if (!newBoard) return state;
       const newMoves = state.moves + 1;
       const newStatus = isSolved(newBoard, state.gridSize) ? 'cleared' : 'playing';
